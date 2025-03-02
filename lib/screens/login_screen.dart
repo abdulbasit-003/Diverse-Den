@@ -6,9 +6,12 @@ import 'package:diverseden/session_manager.dart';
 import 'package:diverseden/home_screens.dart/super_admin_home.dart';
 import 'package:diverseden/home_screens.dart/branch_owner_home.dart';
 import 'package:diverseden/home_screens.dart/customer_home.dart';
+import 'package:diverseden/constants.dart';
+import 'package:diverseden/widgets/text_field_widget.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -16,6 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  String? message;
 
   @override
   void initState() {
@@ -31,15 +35,26 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void loginUser() async {
-    var email = emailController.text;
-    var password = passwordController.text;
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
+    // Validation: Ensure fields are filled
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        message = "Please fill in all fields!";
+      });
+      return;
+    }
+
+    // Database authentication
     var user = await DatabaseService.getUserByEmail(email);
     if (user != null && BCrypt.checkpw(password, user['password'])) {
       await SessionManager.saveUserSession(email, user['role']);
       navigateToHome(user['role']);
     } else {
-      print("Invalid credentials");
+      setState(() {
+        message = "Invalid email or password!";
+      });
     }
   }
 
@@ -56,48 +71,65 @@ class _LoginPageState extends State<LoginPage> {
         context, MaterialPageRoute(builder: (context) => homePage));
   }
 
-  void logoutUser() async {
-    await SessionManager.clearSession();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
-  }
-
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(title: Text("Login")),
-    body: Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextField(
-            controller: emailController,
-            decoration: InputDecoration(labelText: "Email"),
-          ),
-          TextField(
-            controller: passwordController,
-            decoration: InputDecoration(labelText: "Password"),
-            obscureText: true,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: loginUser,
-            child: Text("Login"),
-          ),
+          const Text("Don't have an account?"),
           TextButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignupPage()),
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => const SignUpScreen()),
               );
             },
-            child: Text("Don't have an account? Sign Up"),
+            child: const Text("Sign Up", style: TextStyle(color: textColor)),
           ),
         ],
       ),
-    ),
-  );
+      body: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/logo.png', height: 100, width: 100),
+            const SizedBox(height: 10),
+            const Text("Welcome to Diverse Den",
+                style: TextStyle(
+                    color: textColor, fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+            const Text("Login",
+                style: TextStyle(
+                    color: textColor, fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 20),
+            TextFieldWidget(
+                icon: Icons.email,
+                label: const Text("Enter Email"),
+                obscure: false,
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress),
+            const SizedBox(height: 10),
+            TextFieldWidget(
+                icon: Icons.lock,
+                label: const Text("Enter Password"),
+                obscure: true,
+                controller: passwordController),
+            const SizedBox(height: 15),
+            ElevatedButton(
+              style: const ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(buttonColor),
+              ),
+              onPressed: loginUser,
+              child: const Text("Login", style: TextStyle(color: Colors.white)),
+            ),
+            if (message != null) const SizedBox(height: 10),
+            if (message != null)
+              Text(message!, style: const TextStyle(color: Colors.red)),
+          ],
+        ),
+      ),
+    );
+  }
 }
-}
-

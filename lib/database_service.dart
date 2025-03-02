@@ -57,6 +57,21 @@ class DatabaseService {
   static Future<List<Map<String, dynamic>>> getProductsWith3DModels() async {
   var products = await productsCollection.find(where.exists("modelPath")).toList();
   return products;
-}
+  }
+
+  // Check Email Already exists
+  static Future<bool> checkIfEmailExists(String email) async {
+  var collection = db.collection("users");
+  var existingUser = await collection.findOne({"email": email});
+  return existingUser != null; // Returns true if email exists
+  }
+
+  //Check If Password Already exists
+  static Future<bool> checkIfPhoneExists(String phone) async {
+    var collection = db.collection("users");
+    var existingUser = await collection.findOne({"phone": phone});
+    return existingUser != null; // Returns true if phone exists
+  }
+
 
 }
