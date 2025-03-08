@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:sample_project/session_manager.dart';
 import 'package:sample_project/screens/login_screen.dart';
 import 'package:sample_project/screens/upload_3d_model_screen.dart';
+import 'package:sample_project/test_3d_model.dart';
+import 'package:sample_project/constants.dart';
 
 class BranchOwnerHome extends StatefulWidget {
   const BranchOwnerHome({super.key});
@@ -17,7 +19,7 @@ class _BranchOwnerHomeState extends State<BranchOwnerHome> {
     await SessionManager.clearSession();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
@@ -30,40 +32,69 @@ class _BranchOwnerHomeState extends State<BranchOwnerHome> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      Center(child: Text('3D Models Feed')),
-      Center(child: Text('Search Business/Product')),
-      Upload3DModelScreen(), // Navigates to the 3D model upload screen
-      Center(child: Text('Notifications')),
+      Column(
+        children: [
+          SizedBox(height: MediaQuery.of(context).padding.top),
+          Container(
+            color: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Center(
+              child: Text(
+                "3D Models Feed",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const Expanded(child: TestForYouPage()),
+        ],
+      ),
+      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
+      const Upload3DModelScreen(),
+      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Profile'),
-          SizedBox(height: 20),
+          const Text('Profile', style: TextStyle(fontSize: 18, color: Colors.white)),
+          verticalSpace(20),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
             onPressed: logout,
-            child: Text('Logout'),
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Branch Owner Dashboard')),
+      backgroundColor: Colors.black,
       body: pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.upload), label: 'Upload'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          border: const Border(
+            top: BorderSide(color: Colors.grey, width: 0.3),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green,
-        onTap: _onItemTapped,
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.black,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: textColor,
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+            BottomNavigationBarItem(icon: Icon(Icons.upload), label: 'Upload'),
+            BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          ],
+        ),
       ),
     );
   }

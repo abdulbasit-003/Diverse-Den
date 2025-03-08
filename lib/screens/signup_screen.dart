@@ -99,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("Congratulations!"),
+        title: const Text("Signed Up!"),
         content: const Text("Sign Up Successful. Now you can login!"),
         actions: [
           TextButton(

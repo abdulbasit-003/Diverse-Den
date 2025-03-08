@@ -89,9 +89,9 @@ class _CustomerHomeState extends State<CustomerHome> {
           ),
         ],
       ),
-      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18))),
-      const Center(child: Text('E-commerce Store', style: TextStyle(fontSize: 18))),
-      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18))),
+      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
+      const Center(child: Text('E-commerce Store', style: TextStyle(fontSize: 18,color: Colors.white))),
+      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
