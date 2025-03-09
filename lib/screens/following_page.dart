@@ -6,7 +6,7 @@ class FollowingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Matches TikTok-style dark background
+      backgroundColor: Colors.black, 
       body: Center(
         child: Text(
           "Following Page (Coming Soon)",

@@ -1,5 +1,6 @@
 // import 'package:sample_project/screens/for_you_page.dart';
 import 'package:flutter/material.dart';
+import 'package:sample_project/screens/customer_profile_screen.dart';
 import 'package:sample_project/session_manager.dart';
 import 'package:sample_project/screens/login_screen.dart';
 import 'package:sample_project/screens/following_page.dart';
@@ -92,18 +93,7 @@ class _CustomerHomeState extends State<CustomerHome> {
       const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
       const Center(child: Text('E-commerce Store', style: TextStyle(fontSize: 18,color: Colors.white))),
       const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Profile', style: TextStyle(fontSize: 18,color: Colors.white)),
-          verticalSpace(20), 
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: buttonColor), 
-            onPressed: logout,
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+      const CustomerProfileScreen()
     ];
 
     return Scaffold(

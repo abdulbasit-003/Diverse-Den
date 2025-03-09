@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     String email = emailController.text.toLowerCase().trim();
     String password = passwordController.text.trim();
 
-    // Validation: Ensure fields are filled
+    // Ensure fields are filled
     if (email.isEmpty || password.isEmpty) {
       setState(() {
         message = "Please fill in all fields!";
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void navigateToHome(String role) {
     Widget homePage;
-    if (role == "Super Admin") {
+    if (role == "Admin") {
       homePage = SuperAdminHome();
     } else if (role == "Branch Owner") {
       homePage = BranchOwnerHome();

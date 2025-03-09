@@ -85,7 +85,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     "lastname": lastNameController.text,
     "email": email,
     "phone": phone,
-    "password": password, // This will be hashed in database_service.dart
+    "password": password, 
     "role": "Customer",
     "createdAt": DateTime.now().millisecondsSinceEpoch,
     "updatedAt": DateTime.now().millisecondsSinceEpoch

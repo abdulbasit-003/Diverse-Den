@@ -68,6 +68,8 @@ flutter:
     - assets/models/model1.glb
     - assets/models/model2.glb
     - assets/images/logo.jpg
+    - assets/models/1.glb
+    - assets/models/2.glb
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

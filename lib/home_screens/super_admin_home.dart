@@ -1,7 +1,6 @@
 // import 'package:sample_project/screens/for_you_page.dart';
 import 'package:flutter/material.dart';
-import 'package:sample_project/session_manager.dart';
-import 'package:sample_project/screens/login_screen.dart';
+import 'package:sample_project/screens/admin_profile_screen.dart';
 import 'package:sample_project/test_3d_model.dart';
 import 'package:sample_project/constants.dart';
 
@@ -13,14 +12,6 @@ class SuperAdminHome extends StatefulWidget {
 
 class _SuperAdminHomeState extends State<SuperAdminHome> {
   int _selectedIndex = 0;
-
-  void logout() async {
-    await SessionManager.clearSession();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
-  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -39,7 +30,7 @@ class _SuperAdminHomeState extends State<SuperAdminHome> {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Center(
               child: Text(
-                "For You",
+                "3D Models",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -54,18 +45,7 @@ class _SuperAdminHomeState extends State<SuperAdminHome> {
       const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
       const Center(child: Text('View Reports', style: TextStyle(fontSize: 18,color: Colors.white))),
       const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Profile', style: TextStyle(fontSize: 18, color: Colors.white)),
-          verticalSpace(20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
-            onPressed: logout,
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+      const SuperAdminProfileScreen(),
     ];
 
     return Scaffold(

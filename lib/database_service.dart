@@ -5,7 +5,7 @@ import 'package:bcrypt/bcrypt.dart';
 class DatabaseService {
   static late Db db;
   static late DbCollection usersCollection;
-  static late DbCollection productsCollection; // Added Products Collection
+  static late DbCollection productsCollection; 
 
   static Future<void> connect() async {
     db = await Db.create(
@@ -13,7 +13,7 @@ class DatabaseService {
     await db.open();
 
     usersCollection = db.collection("users");
-    productsCollection = db.collection("products"); // Initialize Products Collection
+    productsCollection = db.collection("products"); 
   }
 
   // Find user by email
@@ -61,17 +61,19 @@ class DatabaseService {
 
   // Check Email Already exists
   static Future<bool> checkIfEmailExists(String email) async {
-  var collection = db.collection("users");
-  var existingUser = await collection.findOne({"email": email});
+  var existingUser = await usersCollection.findOne({"email": email});
   return existingUser != null; // Returns true if email exists
   }
 
   //Check If Password Already exists
   static Future<bool> checkIfPhoneExists(String phone) async {
-    var collection = db.collection("users");
-    var existingUser = await collection.findOne({"phone": phone});
+    var existingUser = await usersCollection.findOne({"phone": phone});
     return existingUser != null; // Returns true if phone exists
   }
 
+  // Fetch user details by email
+static Future<Map<String, dynamic>?> getUserProfile(String email) async {
+  return await usersCollection.findOne(where.eq("email", email));
+}
 
 }

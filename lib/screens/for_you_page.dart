@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:sample_project/database_service.dart';
-// import 'package:sample_project/ar_view_page.dart';
 
 class ForYouPage extends StatefulWidget {
   const ForYouPage({super.key});
@@ -41,7 +40,7 @@ class _ForYouPageState extends State<ForYouPage> {
                 String modelPath = products[index]["modelPath"];
 
                 return Container(
-                  color: Colors.black, // Dark theme for better model contrast
+                  color: Colors.black, 
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
