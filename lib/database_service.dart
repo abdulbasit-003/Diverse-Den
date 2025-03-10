@@ -5,7 +5,8 @@ import 'package:bcrypt/bcrypt.dart';
 class DatabaseService {
   static late Db db;
   static late DbCollection usersCollection;
-  static late DbCollection productsCollection; 
+  static late DbCollection productsCollection;
+  static late DbCollection businessesCollection;
 
   static Future<void> connect() async {
     db = await Db.create(
@@ -13,7 +14,8 @@ class DatabaseService {
     await db.open();
 
     usersCollection = db.collection("users");
-    productsCollection = db.collection("products"); 
+    productsCollection = db.collection("products");
+    businessesCollection = db.collection("businesses");
   }
 
   // Find user by email
@@ -25,6 +27,13 @@ class DatabaseService {
   static Future<void> registerUser(Map<String, dynamic> userData) async {
     userData['password'] = BCrypt.hashpw(userData['password'], BCrypt.gensalt());
     await usersCollection.insert(userData);
+  }
+
+  // Fetch business details by business ID
+  static Future<Map<String, dynamic>?> getBusiness(ObjectId businessId) async {
+    return await businessesCollection.findOne(
+      where.eq('_id', businessId)
+    );
   }
 
   // Check if SKU exists in the database for a specific business
@@ -48,32 +57,24 @@ class DatabaseService {
 
   // Get All Products
   static Future<List<Map<String, dynamic>>> getAllProducts() async {
-  final productsCollection = db.collection("products"); // Accessing the products collection
-  final products = await productsCollection.find().toList(); // Fetching all products
-  return products;
+    return await productsCollection.find().toList();
   }
 
   // Get All Products with 3D Models 
   static Future<List<Map<String, dynamic>>> getProductsWith3DModels() async {
-  var products = await productsCollection.find(where.exists("modelPath")).toList();
-  return products;
+    return await productsCollection.find(where.exists("modelPath")).toList();
   }
 
-  // Check Email Already exists
+  // Check If Email Already Exists
   static Future<bool> checkIfEmailExists(String email) async {
-  var existingUser = await usersCollection.findOne({"email": email});
-  return existingUser != null; // Returns true if email exists
+    var existingUser = await usersCollection.findOne({"email": email});
+    return existingUser != null; // Returns true if email exists
   }
 
-  //Check If Password Already exists
+  // Check If Phone Already Exists
   static Future<bool> checkIfPhoneExists(String phone) async {
     var existingUser = await usersCollection.findOne({"phone": phone});
     return existingUser != null; // Returns true if phone exists
   }
-
-  // Fetch user details by email
-static Future<Map<String, dynamic>?> getUserProfile(String email) async {
-  return await usersCollection.findOne(where.eq("email", email));
-}
 
 }

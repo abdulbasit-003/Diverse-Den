@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:sample_project/constants.dart';
 import 'package:sample_project/database_service.dart';
 
 class ForYouPage extends StatefulWidget {
@@ -40,7 +41,7 @@ class _ForYouPageState extends State<ForYouPage> {
                 String modelPath = products[index]["modelPath"];
 
                 return Container(
-                  color: Colors.black, 
+                  color: fieldBackgroundColor, 
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

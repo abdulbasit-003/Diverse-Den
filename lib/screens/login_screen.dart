@@ -8,7 +8,6 @@ import 'package:sample_project/home_screens/branch_owner_home.dart';
 import 'package:sample_project/home_screens/customer_home.dart';
 import 'package:sample_project/constants.dart';
 import 'package:sample_project/widgets/text_field_widget.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 

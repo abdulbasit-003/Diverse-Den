@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:sample_project/constants.dart';
 
 class TestForYouPage extends StatefulWidget {
   const TestForYouPage({super.key});
@@ -10,6 +11,7 @@ class TestForYouPage extends StatefulWidget {
 
 class _TestForYouPageState extends State<TestForYouPage> {
   final List<String> testModels = [
+    "assets/models/new.glb",
     "assets/models/1.glb",
     "assets/models/model1.glb",
     "assets/models/2.glb",
@@ -27,7 +29,7 @@ class _TestForYouPageState extends State<TestForYouPage> {
           String modelPath = testModels[index];
 
           return Container(
-            color: Colors.white, 
+            color: fieldBackgroundColor, 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

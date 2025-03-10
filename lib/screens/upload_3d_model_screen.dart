@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../database_service.dart';
+import '../constants.dart';
 
 class Upload3DModelScreen extends StatefulWidget {
   const Upload3DModelScreen({super.key});
@@ -31,12 +32,11 @@ class _Upload3DModelScreenState extends State<Upload3DModelScreen> {
     });
   }
 
-  /// Select 3D Model File (.glb, .gltf) - Fixes applied
+  /// Select 3D Model File (.glb, .gltf)
   Future<void> _pick3DModel() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.any,
-        // allowedExtensions: ['glb', 'gltf'], // ✅ No dots
       );
 
       if (result != null) {
@@ -111,31 +111,63 @@ class _Upload3DModelScreenState extends State<Upload3DModelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Upload 3D Model')),
+      backgroundColor: fieldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _skuController,
-              decoration: const InputDecoration(labelText: 'Enter Product SKU'),
+              style: const TextStyle(color: textColor),
+              decoration: InputDecoration(
+                labelText: 'Enter Product SKU',
+                labelStyle: const TextStyle(color: textColor),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: _pick3DModel,
-              child: const Text('Select 3D Model'),
+              icon: const Icon(Icons.upload_file, color: Colors.white,),
+              label: const Text('Select 3D Model'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                foregroundColor: fieldBackgroundColor,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
             if (_selectedModel != null)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text('Selected: ${_selectedModel!.path.split('/').last}'),
+                padding: const EdgeInsets.symmetric(vertical: 10,),
+                child: Text(
+                  'Selected: ${_selectedModel!.path.split('/').last}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                ),
               ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: (_selectedModel == null || _isUploading) ? null : _upload3DModel,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _isUploading ? Colors.grey : buttonColor,
+                foregroundColor: fieldBackgroundColor,
+                padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               child: _isUploading
-                  ? const CircularProgressIndicator()
+                  ? const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(color: fieldBackgroundColor),
+                    )
                   : const Text('Upload Model'),
             ),
           ],
