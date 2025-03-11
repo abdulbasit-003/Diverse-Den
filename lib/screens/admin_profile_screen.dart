@@ -26,7 +26,7 @@ class _SuperAdminProfileScreenState extends State<SuperAdminProfileScreen> {
     String? email = session['email'];
 
     if (email != null) {
-      var user = await DatabaseService.getUserProfile(email);
+      var user = await DatabaseService.getUserByEmail(email);
       setState(() {
         userData = user;
         isLoading = false;
@@ -45,13 +45,15 @@ class _SuperAdminProfileScreenState extends State<SuperAdminProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: fieldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        backgroundColor: textColor,
         elevation: 0,
-        title: Text('Admin Profile', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: Text('Admin Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: iconColor),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: logout,
           ),
         ],
@@ -61,14 +63,14 @@ class _SuperAdminProfileScreenState extends State<SuperAdminProfileScreen> {
           : userData == null
               ? Center(child: Text('User data not found', style: TextStyle(color: textColor)))
               : SingleChildScrollView(
-                  child: Center( // Centers everything
+                  child: Center( 
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         verticalSpace(30),
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage: AssetImage(logo), // Default Profile Picture
+                          backgroundImage: AssetImage(logo), 
                           backgroundColor: fieldBackgroundColor,
                         ),
                         verticalSpace(10),
@@ -79,7 +81,7 @@ class _SuperAdminProfileScreenState extends State<SuperAdminProfileScreen> {
                         verticalSpace(5),
                         Text(
                           userData!['email'],
-                          style: TextStyle(fontSize: 16, color: textColor.withOpacity(0.7)),
+                          style: TextStyle(fontSize: 16, color: textColor),
                         ),
                       ],
                     ),

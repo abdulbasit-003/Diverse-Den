@@ -8,7 +8,6 @@ import 'package:sample_project/home_screens/branch_owner_home.dart';
 import 'package:sample_project/home_screens/customer_home.dart';
 import 'package:sample_project/constants.dart';
 import 'package:sample_project/widgets/text_field_widget.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -74,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: fieldBackgroundColor,
       bottomNavigationBar: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

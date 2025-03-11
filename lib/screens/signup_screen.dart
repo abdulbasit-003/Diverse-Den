@@ -20,6 +20,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController phoneController = TextEditingController();
   String? message;
 
+  void clearControllers(){
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    phoneController.clear();
+  }
+
   void registerUser() async {
   String email = emailController.text.trim();
   String phone = phoneController.text.trim();
@@ -91,41 +100,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
     "updatedAt": DateTime.now().millisecondsSinceEpoch
   };
 
-  await DatabaseService.registerUser(newUser);
-  setState(() {
-    message = "";
-  });
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Signed Up!"),
-        content: const Text("Sign Up Successful. Now you can login!"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Cancel"),
+    await DatabaseService.registerUser(newUser);
+    setState(() {
+      message = "";
+      clearControllers();
+    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: fieldBackgroundColor, // Themed background
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12), // Rounded corners
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (ctx) => const LoginPage()),
-              );
-            },
-            child: const Text("Proceed"),
+          title: Text(
+            "Signed Up!",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor, // Themed title color
+            ),
+          ),
+          content: Text(
+            "Sign Up Successful. Now you can login!",
+            style: TextStyle(
+              fontSize: 16,
+              color: textColor, // Themed text color
+            ),
+          ),
+          actions: [
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pop();
+            //   },
+            //   style: TextButton.styleFrom(
+            //     foregroundColor: textColor, // Themed text color
+            //   ),
+            //   child: const Text("Cancel"),
+            // ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) => const LoginPage()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor, // Themed button color
+                foregroundColor: Colors.white, // White text for contrast
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), // Button border
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              child: const Text(
+                "Proceed",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
       },
     );
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: fieldBackgroundColor,
       bottomNavigationBar: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

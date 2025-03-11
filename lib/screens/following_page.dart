@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sample_project/constants.dart';
 
 class FollowingPage extends StatelessWidget {
   const FollowingPage({super.key});
@@ -6,11 +7,11 @@ class FollowingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, 
+      backgroundColor: fieldBackgroundColor, 
       body: Center(
         child: Text(
           "Following Page (Coming Soon)",
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: TextStyle(color: buttonColor, fontSize: 18),
         ),
       ),
     );

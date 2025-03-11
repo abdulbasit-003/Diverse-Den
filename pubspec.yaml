@@ -39,7 +39,6 @@ dependencies:
   shared_preferences: ^2.5.2
   model_viewer_plus: ^1.9.1
   file_picker: ^9.0.2
-  wakelock_plus: ^1.2.10
 
 dev_dependencies:
   flutter_test:
@@ -67,9 +66,10 @@ flutter:
   assets:
     - assets/models/model1.glb
     - assets/models/model2.glb
-    - assets/images/logo.jpg
+    - assets/images/logo.png
     - assets/models/1.glb
     - assets/models/2.glb
+    - assets/models/new.glb
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

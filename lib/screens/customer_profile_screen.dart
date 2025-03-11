@@ -25,7 +25,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     String? email = session['email'];
 
     if (email != null) {
-      var user = await DatabaseService.getUserProfile(email);
+      var user = await DatabaseService.getUserByEmail(email);
       setState(() {
         userData = user;
         isLoading = false;
@@ -44,13 +44,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: fieldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: textColor,
+        automaticallyImplyLeading: false,
         elevation: 0,
-        title: Text('Your Profile', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: Text('Your Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: iconColor),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: logout,
           ),
         ],
@@ -79,7 +81,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                           verticalSpace(5),
                           Text(
                             userData!['email'],
-                            style: TextStyle(fontSize: 16, color: textColor.withOpacity(0.7)),
+                            style: TextStyle(fontSize: 16, color: textColor),
                           ),
                         ],
                       ),

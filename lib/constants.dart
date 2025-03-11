@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-const logo = 'assets/images/logo.jpg';
+const logo = 'assets/images/logo.png';
 const dbUser = "cyberghoost902";
 const dbPass = "hamadgul7";
 const Color buttonColor = Color(0xFF603F26);
 const Color textColor = Color(0xFF603F26);
 const Color iconColor = Color(0xFF603F26);
-const Color fieldBackgroundColor =  Color.fromARGB(255, 224, 224, 224);
+// const Color fieldBackgroundColor =  Color.fromARGB(255, 224, 224, 224);
+const Color fieldBackgroundColor =  Colors.white;
 
 Widget verticalSpace(double height) {
   return SizedBox(

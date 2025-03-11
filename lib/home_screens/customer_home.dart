@@ -15,7 +15,7 @@ class CustomerHome extends StatefulWidget {
 
 class _CustomerHomeState extends State<CustomerHome> {
   int _selectedIndex = 0;
-  bool isForYouSelected = true; // Tracks the selected tab (Following/For You)
+  bool isForYouSelected = true; 
 
   void logout() async {
     await SessionManager.clearSession();
@@ -39,7 +39,7 @@ class _CustomerHomeState extends State<CustomerHome> {
           SizedBox(height: MediaQuery.of(context).padding.top), 
 
           Container(
-            color: Colors.black,
+            color: buttonColor,
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -90,9 +90,9 @@ class _CustomerHomeState extends State<CustomerHome> {
           ),
         ],
       ),
-      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
-      const Center(child: Text('E-commerce Store', style: TextStyle(fontSize: 18,color: Colors.white))),
-      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: textColor)))),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Ecommerce Store', style: TextStyle(fontSize: 18,color: textColor)))),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: textColor)))),
       const CustomerProfileScreen()
     ];
 

@@ -26,7 +26,7 @@ class _SuperAdminHomeState extends State<SuperAdminHome> {
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
           Container(
-            color: Colors.black,
+            color: buttonColor,
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Center(
               child: Text(
@@ -42,9 +42,9 @@ class _SuperAdminHomeState extends State<SuperAdminHome> {
           const Expanded(child: TestForYouPage()),
         ],
       ),
-      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
-      const Center(child: Text('View Reports', style: TextStyle(fontSize: 18,color: Colors.white))),
-      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: textColor)))),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('View Reports', style: TextStyle(fontSize: 18,color: textColor)))),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: textColor)))),
       const SuperAdminProfileScreen(),
     ];
 
