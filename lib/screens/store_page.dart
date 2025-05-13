@@ -146,7 +146,8 @@ class _StorePageState extends State<StorePage> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(16),
                                       ),
-                                      elevation: 4,
+                                      elevation: 5,
+                                      shadowColor: buttonColor,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,

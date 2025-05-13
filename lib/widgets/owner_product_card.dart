@@ -79,6 +79,7 @@ class OwnerProductCard extends StatelessWidget {
       child: Card(
         color: Colors.white,
         elevation: 5,
+        shadowColor: buttonColor,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

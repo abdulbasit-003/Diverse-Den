@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sample_project/constants.dart';
 import 'package:sample_project/screens/model_view.dart';
 
 class ProductCard extends StatelessWidget {
@@ -25,6 +26,7 @@ class ProductCard extends StatelessWidget {
       child: Card(
         color: Colors.white,
         elevation: 5,
+        shadowColor: buttonColor,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

@@ -43,7 +43,9 @@ class CategoryViewPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 4,
+              shadowColor: buttonColor,
+              color: Colors.white,
+              elevation: 5,
               child: Column(
                 children: [
                   ClipRRect(
@@ -70,12 +72,12 @@ class CategoryViewPage extends StatelessWidget {
                         return Container(
                           height: 140,
                           width: double.infinity,
-                          color: Colors.grey[300],
+                          color: Colors.white,
                           child: const Center(
                             child: Icon(
                               Icons.broken_image,
                               size: 40,
-                              color: Colors.grey,
+                              color: Colors.white,
                             ),
                           ),
                         );

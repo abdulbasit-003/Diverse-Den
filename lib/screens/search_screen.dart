@@ -65,7 +65,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildProductCard(Product product) {
     return Card(
       color: Colors.white,
-      elevation: 4,
+      elevation: 5,
+      shadowColor: buttonColor,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: ClipRRect(
@@ -111,7 +112,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildBusinessCard(Business business) {
     return Card(
       color: Colors.white,
-      elevation: 4,
+      elevation: 5,
+      shadowColor: buttonColor,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: const CircleAvatar(backgroundImage: AssetImage(logo)),
