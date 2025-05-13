@@ -90,7 +90,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
-                      const SizedBox(height: 30),
+                      verticalSpace(30),
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -102,7 +102,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                           backgroundColor: fieldBackgroundColor,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      verticalSpace(10),
                       Text(
                         business.name,
                         style: const TextStyle(
@@ -112,7 +112,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      verticalSpace(5),
                       Text(
                         business.description,
                         maxLines: 3,
@@ -122,7 +122,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      verticalSpace(20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -137,7 +137,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                           _buildStatColumn('Likes', business.likes.toString()),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      verticalSpace(10),
                       (isAdmin)
                           ? verticalSpace(1)
                           : Padding(
@@ -180,7 +180,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                               ),
                             ),
                           ),
-                      const SizedBox(height: 20),
+                      verticalSpace(20),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(10),
@@ -225,7 +225,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                               return ProductCard(product: product);
                             },
                           ),
-                      const SizedBox(height: 30),
+                      verticalSpace(30),
                     ],
                   ),
                 ),

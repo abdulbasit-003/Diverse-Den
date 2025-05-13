@@ -6,6 +6,7 @@ final uploadPreset = '3d_models';
 const logo = 'assets/images/logo.png';
 const dbUser = "cyberghoost902";
 const dbPass = "hamadgul7";
+const finalShippingCost = 200.0;
 
 const Color buttonColor = Color(0xFF603F26);
 const Color textColor = Colors.black;

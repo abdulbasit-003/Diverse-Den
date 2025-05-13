@@ -43,10 +43,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
     final products = await DatabaseService.searchProducts(query);
     final businessMaps = await DatabaseService.searchBusinesses(query);
-    List<Business> businesses = businessMaps.map((b) => Business.fromJson(b)).toList();
+    List<Business> businesses =
+        businessMaps.map((b) => Business.fromJson(b)).toList();
 
     if (currentUser != null) {
-      businesses = businesses.where((b) => b.id != currentUser['business']).toList();
+      businesses =
+          businesses.where((b) => b.id != currentUser['business']).toList();
     }
 
     setState(() {
@@ -60,7 +62,6 @@ class _SearchScreenState extends State<SearchScreen> {
       isLoading = false;
     });
   }
-
 
   Widget _buildProductCard(Product product) {
     return Card(
@@ -95,7 +96,11 @@ class _SearchScreenState extends State<SearchScreen> {
             },
           ),
         ),
-        title: Text(product.title),
+        title: Text(
+          product.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         subtitle: Text("Rs ${product.price}"),
         onTap: () {
           Navigator.push(
