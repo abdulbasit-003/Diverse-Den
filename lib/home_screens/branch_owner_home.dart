@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sample_project/screens/for_you_page.dart';
+import 'package:sample_project/screens/search_screen.dart';
 import 'package:sample_project/session_manager.dart';
 import 'package:sample_project/screens/login_screen.dart';
 import 'package:sample_project/screens/upload_3d_model_screen.dart';
-import 'package:sample_project/test_3d_model.dart';
 import 'package:sample_project/constants.dart';
+import 'package:sample_project/screens/branch_owner_profile.dart';
+// import 'package:sample_project/test_3d_model.dart';
 
 class BranchOwnerHome extends StatefulWidget {
   const BranchOwnerHome({super.key});
@@ -36,7 +39,7 @@ class _BranchOwnerHomeState extends State<BranchOwnerHome> {
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
           Container(
-            color: Colors.black,
+            color: buttonColor,
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Center(
               child: Text(
@@ -49,26 +52,13 @@ class _BranchOwnerHomeState extends State<BranchOwnerHome> {
               ),
             ),
           ),
-          const Expanded(child: TestForYouPage()),
+          const Expanded(child: ForYouPage()),
         ],
       ),
-      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
+      const SearchScreen(),
       const Upload3DModelScreen(),
-      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
-      Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Profile', style: TextStyle(fontSize: 18, color: Colors.white)),
-            verticalSpace(20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
-              onPressed: logout,
-              child: const Text('Logout', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: textColor)))),
+      const BranchOwnerProfileScreen(),
     ];
 
     return Scaffold(
@@ -82,11 +72,10 @@ class _BranchOwnerHomeState extends State<BranchOwnerHome> {
           ),
         ),
         child: BottomNavigationBar(
-          backgroundColor: Colors.black,
-          landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
+          backgroundColor: buttonColor,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: textColor,
-          unselectedItemColor: Colors.grey,
+          selectedItemColor: textColor, 
+          unselectedItemColor: Colors.white,
           showUnselectedLabels: true,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

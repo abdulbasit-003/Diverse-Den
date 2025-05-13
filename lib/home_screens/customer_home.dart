@@ -1,11 +1,14 @@
-// import 'package:sample_project/screens/for_you_page.dart';
 import 'package:flutter/material.dart';
 import 'package:sample_project/screens/customer_profile_screen.dart';
+import 'package:sample_project/screens/for_you_page.dart';
+import 'package:sample_project/screens/store_page.dart';
 import 'package:sample_project/session_manager.dart';
 import 'package:sample_project/screens/login_screen.dart';
 import 'package:sample_project/screens/following_page.dart';
 import 'package:sample_project/constants.dart';
-import 'package:sample_project/test_3d_model.dart'; 
+import 'package:sample_project/screens/search_screen.dart';
+// import 'package:sample_project/test_3d_model.dart'; 
+
 class CustomerHome extends StatefulWidget {
   const CustomerHome({super.key});
 
@@ -15,7 +18,7 @@ class CustomerHome extends StatefulWidget {
 
 class _CustomerHomeState extends State<CustomerHome> {
   int _selectedIndex = 0;
-  bool isForYouSelected = true; // Tracks the selected tab (Following/For You)
+  bool isForYouSelected = true; 
 
   void logout() async {
     await SessionManager.clearSession();
@@ -39,7 +42,7 @@ class _CustomerHomeState extends State<CustomerHome> {
           SizedBox(height: MediaQuery.of(context).padding.top), 
 
           Container(
-            color: Colors.black,
+            color: buttonColor,
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -86,13 +89,14 @@ class _CustomerHomeState extends State<CustomerHome> {
           ),
 
           Expanded(
-            child: isForYouSelected ? const TestForYouPage() : const FollowingPage(),
+            child: isForYouSelected ? const ForYouPage() : const FollowingPage(),
           ),
         ],
       ),
-      const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: Colors.white))),
-      const Center(child: Text('E-commerce Store', style: TextStyle(fontSize: 18,color: Colors.white))),
-      const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: Colors.white))),
+      // Container(color: fieldBackgroundColor,child: const Center(child: Text('Search Business/Product', style: TextStyle(fontSize: 18,color: textColor)))),
+      const SearchScreen(),
+      const StorePage(),
+      Container(color: fieldBackgroundColor,child: const Center(child: Text('Notifications', style: TextStyle(fontSize: 18,color: textColor)))),
       const CustomerProfileScreen()
     ];
 
@@ -108,10 +112,10 @@ class _CustomerHomeState extends State<CustomerHome> {
           ),
         ),
         child: BottomNavigationBar(
-          backgroundColor: Colors.black,
+          backgroundColor: buttonColor,
           type: BottomNavigationBarType.fixed,
           selectedItemColor: textColor, 
-          unselectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.white,
           showUnselectedLabels: true,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

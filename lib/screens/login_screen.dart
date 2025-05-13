@@ -8,7 +8,6 @@ import 'package:sample_project/home_screens/branch_owner_home.dart';
 import 'package:sample_project/home_screens/customer_home.dart';
 import 'package:sample_project/constants.dart';
 import 'package:sample_project/widgets/text_field_widget.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -74,6 +73,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Diverse Den App',style: TextStyle(color: Colors.white),),backgroundColor: buttonColor,centerTitle: true,),
+      backgroundColor: fieldBackgroundColor,
       bottomNavigationBar: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -88,46 +89,49 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(logo, height: 100, width: 100),
-            const SizedBox(height: 10),
-            const Text("Welcome to Diverse Den",
-                style: TextStyle(
-                    color: textColor, fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 30),
-            const Text("Login",
-                style: TextStyle(
-                    color: textColor, fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 20),
-            TextFieldWidget(
-                icon: Icons.email,
-                label: const Text("Enter Email"),
-                obscure: false,
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress),
-            const SizedBox(height: 10),
-            TextFieldWidget(
-                icon: Icons.lock,
-                label: const Text("Enter Password"),
-                obscure: true,
-                controller: passwordController),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              style: const ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(buttonColor),
+      body: SingleChildScrollView(
+        child: Container( 
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(logo, height: 100, width: 100),
+              const SizedBox(height: 10),
+              const Text("Welcome to Diverse Den",
+                  style: TextStyle(
+                      color: textColor, fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 30),
+              const Text("Login",
+                  style: TextStyle(
+                      color: textColor, fontSize: 16, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 20),
+              TextFieldWidget(
+                  icon: Icons.email,
+                  label: const Text("Enter Email"),
+                  obscure: false,
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress),
+              const SizedBox(height: 10),
+              TextFieldWidget(
+                  icon: Icons.lock,
+                  label: const Text("Enter Password"),
+                  obscure: true,
+                  controller: passwordController),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                style: const ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(buttonColor),
+                ),
+                onPressed: loginUser,
+                child: const Text("Login", style: TextStyle(color: Colors.white)),
               ),
-              onPressed: loginUser,
-              child: const Text("Login", style: TextStyle(color: Colors.white)),
-            ),
-            if (message != null) const SizedBox(height: 10),
-            if (message != null)
-              Text(message!, style: const TextStyle(color: Colors.red)),
-          ],
+              if (message != null) const SizedBox(height: 10),
+              if (message != null)
+                Text(message!, style: const TextStyle(color: Colors.red)),
+            ],
+          ),
         ),
       ),
     );

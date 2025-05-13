@@ -36,10 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.8
   mongo_dart: ^0.10.4
   bcrypt: ^1.1.3
-  shared_preferences: ^2.5.2
   model_viewer_plus: ^1.9.1
-  file_picker: ^9.0.2
-  wakelock_plus: ^1.2.10
+  file_picker: ^10.1.2
+  firebase_core: ^3.12.1
+  firebase_storage: ^12.4.4
+  shared_preferences: ^2.1.1
+  http: ^1.3.0
+  timeago: ^3.2.2
 
 dev_dependencies:
   flutter_test:
@@ -67,9 +70,10 @@ flutter:
   assets:
     - assets/models/model1.glb
     - assets/models/model2.glb
-    - assets/images/logo.jpg
+    - assets/images/logo.png
     - assets/models/1.glb
     - assets/models/2.glb
+    - assets/models/new.glb
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
