@@ -65,6 +65,14 @@ class DatabaseService {
     return existingUser != null; // Returns true if phone exists
   }
 
+  // Getting user by id
+  static Future<Map<String, dynamic>?> getUserById(ObjectId userId) async {
+  final userCollection = db.collection('users');
+  final user = await userCollection.findOne(where.id(userId));
+  return user;
+}
+
+
   // Assign Model to Product
   static Future<void> assignModelToProduct(String sku, String modelPath) async {
     await productsCollection.update(

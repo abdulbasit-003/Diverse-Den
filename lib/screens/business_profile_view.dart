@@ -21,6 +21,7 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
   String? currentUserEmail;
   bool isAdmin = false;
   var currentUser;
+  String? profilePictureUrl;
 
   @override
   void initState() {
@@ -36,14 +37,17 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
     if (user!['role'] == 'Admin') {
       isAdmin = true;
     }
+    
     final following = await DatabaseService.isFollowingBusiness(
       customerEmail: currentUserEmail!,
       businessId: widget.business.id,
     );
 
-    setState(() {
-      isFollowing = following;
-    });
+    final ownerUser = await DatabaseService.getUserById(widget.business.user);
+      setState(() {
+        isFollowing = following;
+        profilePictureUrl = ownerUser?['profilePicture'];
+      });
 
     await _fetchModels();
   }
@@ -96,10 +100,12 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                           shape: BoxShape.circle,
                           border: Border.all(color: textColor, width: 3),
                         ),
-                        child: const CircleAvatar(
+                        child: CircleAvatar(
                           radius: 50,
-                          backgroundImage: AssetImage(logo),
                           backgroundColor: fieldBackgroundColor,
+                          backgroundImage: profilePictureUrl != null
+                              ? NetworkImage(profilePictureUrl!)
+                              : const AssetImage(logo) as ImageProvider,
                         ),
                       ),
                       verticalSpace(10),

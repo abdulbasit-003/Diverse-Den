@@ -130,6 +130,7 @@ class _ModelViewState extends State<ModelView> {
                               followers: business!['followers'] ?? 0,
                               following: business!['following'] ?? 0,
                               likes: business!['likes'] ?? 0,
+                              user: business!['user'],
                             );
 
                             Navigator.push(

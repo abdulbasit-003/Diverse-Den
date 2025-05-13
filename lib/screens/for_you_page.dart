@@ -189,6 +189,7 @@ class _ForYouPageState extends State<ForYouPage> {
                                         following:
                                             businessMap['following'] ?? 0,
                                         likes: businessMap['likes'] ?? 0,
+                                        user: businessMap['user'],
                                       );
 
                                       Navigator.push(
