@@ -61,12 +61,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     orElse: () => Variant(size: '', colors: []),
   );
 
-  final VariantColor selectedColorVariant = selectedVariant!.colors.firstWhere(
+  final VariantColor selectedColorVariant = selectedVariant.colors.firstWhere(
     (c) => c.color == selectedColor,
     orElse: () => VariantColor(color: '', quantity: 0),
   );
 
-  final int quantity = selectedColorVariant!.quantity;
+  final int quantity = selectedColorVariant.quantity;
 
     return Scaffold(
       appBar: AppBar(
@@ -194,12 +194,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         selectedSize: selectedSize!,
                         quantity: 1,
                       );
-
+                      ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Item added to cart')),
                       );
+                      
                     } catch (e) {
                       if (e.toString().contains("Out of stock")) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Item is out of stock')),
                         );

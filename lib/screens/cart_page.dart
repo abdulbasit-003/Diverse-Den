@@ -85,10 +85,10 @@ class _CartPageState extends State<CartPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.abc,size: 100,),
+                    Icon(Icons.shopping_cart_outlined,size: 100,color: buttonColor,),
                     Text(
                       'Your cart is empty!',
-                      style: TextStyle(color: textColor,fontSize: 16),
+                      style: TextStyle(color: textColor,fontSize: 16,fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

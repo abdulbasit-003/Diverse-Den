@@ -5,7 +5,7 @@ import 'package:sample_project/constants.dart';
 import 'package:sample_project/screens/for_you_page.dart';
 import 'package:sample_project/screens/search_screen.dart';
 import 'package:sample_project/screens/store_page.dart';
-import 'package:sample_project/test_3d_model.dart';
+// import 'package:sample_project/test_3d_model.dart';
 
 class SuperAdminHome extends StatefulWidget {
   const SuperAdminHome({super.key});
