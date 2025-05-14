@@ -1,177 +1,193 @@
-// import 'package:flutter/material.dart';
-// import 'package:sample_project/database_service.dart';
-// import 'package:sample_project/models/cart_item.dart';
-// import 'package:sample_project/session_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:sample_project/constants.dart';
+import 'package:bson/bson.dart';
+import 'package:sample_project/database_service.dart';
 
-// class CheckoutPage extends StatefulWidget {
-//   @override
-//   _CheckoutPageState createState() => _CheckoutPageState();
-// }
+class CheckoutPage extends StatefulWidget {
+  final ObjectId userId;
+  final Map<String, dynamic> userInfo;
+  final List<Map<String, dynamic>> cartItems;
 
-// class _CheckoutPageState extends State<CheckoutPage> {
-//   late List<CartItem> cartItems;
-//   late double totalAmount;
-//   String paymentMethod = 'Stripe';
+  const CheckoutPage({
+    super.key,
+    required this.userId,
+    required this.userInfo,
+    required this.cartItems,
+  });
 
-//   // Controllers for input fields
-//   final TextEditingController firstNameController = TextEditingController();
-//   final TextEditingController lastNameController = TextEditingController();
-//   final TextEditingController emailController = TextEditingController();
-//   final TextEditingController addressController = TextEditingController();
-//   final TextEditingController cityController = TextEditingController();
-//   final TextEditingController phoneController = TextEditingController();
+  @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadCartItems();
-//   }
+class _CheckoutPageState extends State<CheckoutPage> {
+  bool isPlacingOrder = false;
+  double shippingCost = finalShippingCost;
 
-//   // Load cart items from the database
-//   void _loadCartItems() async {
-//     cartItems = await DatabaseService.getCartItemsForCurrentUser();
-//     totalAmount = cartItems.fold(
-//       0.0,
-//       (sum, item) => sum + (item.product.price * item.quantity),
-//     );
-//     setState(() {});
-//   }
+  void _placeOrders() async {
+    setState(() => isPlacingOrder = true);
 
-//   // Place the order and clear cart
-//   void _placeOrder() async {
-//     final session = await SessionManager.getUserSession();
-//     final user = await DatabaseService.getUserByEmail(session['email']!);
+    try {
+      // Group cart items by businessId
+      final Map<ObjectId, List<Map<String, dynamic>>> itemsByBusiness = {};
 
-//     final order = {
-//       'userId': user!['_id'],
-//       'cartItems': cartItems.map((item) => {
-//         'productId': item.product.id,
-//         'quantity': item.quantity,
-//         'variant': item.selectedVariant,
-//       }).toList(),
-//       'totalAmount': totalAmount,
-//       'paymentMethod': paymentMethod,
-//       'shippingInfo': {
-//         'firstName': firstNameController.text,
-//         'lastName': lastNameController.text,
-//         'email': emailController.text,
-//         'address': addressController.text,
-//         'city': cityController.text,
-//         'phone': phoneController.text,
-//       },
-//       'status': 'Pending',
-//       'orderDate': DateTime.now(),
-//     };
+      for (var item in widget.cartItems) {
+        final product = item['product'];
+        final businessHex = product['business'];
 
-//     // Save the order
-//     await DatabaseService.placeOrder(order);
+        if (businessHex == null || businessHex is! String) {
+          throw Exception("Invalid or missing business ID in product: ${product['title']}");
+        }
 
-//     // Clear the cart
-//     await DatabaseService.clearCartForUser(user['_id']);
+        final businessId = ObjectId.fromHexString(businessHex);
 
-//     // Navigate to order confirmation screen or similar
-//     Navigator.pushNamed(context, '/orderConfirmation');
-//   }
+        itemsByBusiness.putIfAbsent(businessId, () => []).add(item);
+      }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Checkout')),
-//       body: cartItems.isEmpty
-//           ? Center(child: CircularProgressIndicator())
-//           : SingleChildScrollView(
-//               child: Padding(
-//                 padding: const EdgeInsets.all(16.0),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     // Order Summary
-//                     Text('Order Summary', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-//                     ...cartItems.map((item) {
-//                       return ListTile(
-//                         title: Text(item.product.title),
-//                         subtitle: Text("Quantity: ${item.quantity}"),
-//                         trailing: Text("\$${item.quantity * item.product.price}"),
-//                       );
-//                     }).toList(),
-//                     Divider(),
-//                     ListTile(
-//                       title: Text("Total Amount"),
-//                       trailing: Text("\$$totalAmount"),
-//                     ),
-//                     SizedBox(height: 20),
 
-//                     // Shipping Info
-//                     Text('Shipping Information', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-//                     TextFormField(
-//                       controller: firstNameController,
-//                       decoration: InputDecoration(labelText: "First Name"),
-//                       validator: (value) => value!.isEmpty ? "Enter your first name" : null,
-//                     ),
-//                     TextFormField(
-//                       controller: lastNameController,
-//                       decoration: InputDecoration(labelText: "Last Name"),
-//                       validator: (value) => value!.isEmpty ? "Enter your last name" : null,
-//                     ),
-//                     TextFormField(
-//                       controller: emailController,
-//                       decoration: InputDecoration(labelText: "Email"),
-//                       validator: (value) => value!.isEmpty ? "Enter your email" : null,
-//                     ),
-//                     TextFormField(
-//                       controller: addressController,
-//                       decoration: InputDecoration(labelText: "Address"),
-//                       validator: (value) => value!.isEmpty ? "Enter your address" : null,
-//                     ),
-//                     TextFormField(
-//                       controller: cityController,
-//                       decoration: InputDecoration(labelText: "City"),
-//                       validator: (value) => value!.isEmpty ? "Enter your city" : null,
-//                     ),
-//                     TextFormField(
-//                       controller: phoneController,
-//                       decoration: InputDecoration(labelText: "Phone"),
-//                       validator: (value) => value!.isEmpty ? "Enter your phone" : null,
-//                     ),
-//                     SizedBox(height: 20),
+      for (var entry in itemsByBusiness.entries) {
+        final businessId = entry.key;
+        final items = entry.value;
 
-//                     // Payment Method Selector
-//                     Text('Payment Method', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-//                     ListTile(
-//                       title: Text("Stripe"),
-//                       leading: Radio<String>(
-//                         value: 'Stripe',
-//                         groupValue: paymentMethod,
-//                         onChanged: (value) {
-//                           setState(() {
-//                             paymentMethod = value!;
-//                           });
-//                         },
-//                       ),
-//                     ),
-//                     ListTile(
-//                       title: Text("Cash on Delivery (COD)"),
-//                       leading: Radio<String>(
-//                         value: 'COD',
-//                         groupValue: paymentMethod,
-//                         onChanged: (value) {
-//                           setState(() {
-//                             paymentMethod = value!;
-//                           });
-//                         },
-//                       ),
-//                     ),
-//                     SizedBox(height: 20),
+        double subTotal = 0;
 
-//                     // Place Order Button
-//                     ElevatedButton(
-//                       onPressed: _placeOrder,
-//                       child: Text("Place Order"),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//     );
-//   }
-// }
+        for (var item in items) {
+          final price =
+              double.tryParse(item['product']['price'].toString()) ?? 0;
+          final quantity = int.tryParse(item['quantity'].toString()) ?? 1;
+          subTotal += price * quantity;
+        }
+
+        double totalAmount = subTotal + shippingCost;
+
+        await DatabaseService.placeOrder(
+          orderType: 'Online',
+          userId: widget.userId,
+          userInfo: {...widget.userInfo, 'paymentMethod': 'cashOnDelivery'},
+          cartItems: items,
+          subTotal: subTotal,
+          shippingCost: shippingCost,
+          totalAmount: totalAmount,
+          businessId: businessId,
+          branchCode: '',
+        );
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Order(s) placed successfully!')));
+
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error placing orders: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Order Placed Successfully')));
+    } finally {
+      setState(() => isPlacingOrder = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double subTotal = 0;
+    for (var item in widget.cartItems) {
+      final price = double.tryParse(item['product']['price'].toString()) ?? 0;
+      final quantity = int.tryParse(item['quantity'].toString()) ?? 1;
+      subTotal += price * quantity;
+    }
+
+    double totalAmount = subTotal + shippingCost;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Checkout', style: TextStyle(color: Colors.white)),
+        backgroundColor: buttonColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'Shipping Address:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(widget.userInfo['address'] ?? ''),
+            const Divider(height: 32),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.cartItems.length,
+                itemBuilder: (context, index) {
+                  final item = widget.cartItems[index];
+                  final product = item['product'];
+                  final quantity = item['quantity'];
+
+                  final title = product['title'] ?? '';
+                  final image =
+                      (product['imagePath'] != null &&
+                              product['imagePath'].isNotEmpty)
+                          ? product['imagePath'][0]
+                          : null;
+                  final price = product['price'] ?? 0;
+
+                  return ListTile(
+                    leading:
+                        image != null
+                            ? Image.network(
+                              image,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                            : Icon(Icons.image),
+                    title: Text(title),
+                    subtitle: Text('Qty: $quantity'),
+                    trailing: Text('Rs. ${(price * quantity).toString()}'),
+                  );
+                },
+              ),
+            ),
+
+            const Divider(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Subtotal'),
+                Text('Rs. ${subTotal.toStringAsFixed(2)}'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Shipping'),
+                Text('Rs. ${shippingCost.toStringAsFixed(2)}'),
+              ],
+            ),
+            const Divider(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  'Rs. ${totalAmount.toStringAsFixed(2)}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
+              onPressed: isPlacingOrder ? null : _placeOrders,
+              child:
+                  isPlacingOrder
+                      ? CircularProgressIndicator(color: buttonColor)
+                      : Text('Place Order',style: TextStyle(color: Colors.white),),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

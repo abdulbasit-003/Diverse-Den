@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:sample_project/session_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseService {
   static late Db db;
@@ -15,6 +16,7 @@ class DatabaseService {
   static late DbCollection businessesCollection;
   static late DbCollection commentsCollection;
   static late DbCollection cartsCollection;
+  static late DbCollection ordersCollection;
 
   static Future<void> connect() async {
     db = await Db.create(
@@ -27,6 +29,7 @@ class DatabaseService {
     businessesCollection = db.collection("businesses");
     commentsCollection = db.collection("comments");
     cartsCollection = db.collection('carts');
+    ordersCollection = db.collection('orders');
   }
 
   // Find user by email
@@ -67,11 +70,10 @@ class DatabaseService {
 
   // Getting user by id
   static Future<Map<String, dynamic>?> getUserById(ObjectId userId) async {
-  final userCollection = db.collection('users');
-  final user = await userCollection.findOne(where.id(userId));
-  return user;
-}
-
+    final userCollection = db.collection('users');
+    final user = await userCollection.findOne(where.id(userId));
+    return user;
+  }
 
   // Assign Model to Product
   static Future<void> assignModelToProduct(String sku, String modelPath) async {
@@ -473,7 +475,10 @@ class DatabaseService {
     await cartsCollection.deleteOne({'_id': cartId});
   }
 
-  static Future<void> updateCartItemQuantity(ObjectId cartId, int newQty) async {
+  static Future<void> updateCartItemQuantity(
+    ObjectId cartId,
+    int newQty,
+  ) async {
     await cartsCollection.updateOne(
       where.eq('_id', cartId),
       modify.set('quantity', newQty).set('updatedAt', DateTime.now()),
@@ -504,10 +509,8 @@ class DatabaseService {
       throw Exception("Size variant not found");
     }
 
-    final matchingColor = (matchingVariant['colors'] as List<dynamic>).firstWhere(
-      (c) => c['color'] == selectedColor,
-      orElse: () => null,
-    );
+    final matchingColor = (matchingVariant['colors'] as List<dynamic>)
+        .firstWhere((c) => c['color'] == selectedColor, orElse: () => null);
 
     if (matchingColor == null) {
       throw Exception("Color variant not found");
@@ -538,22 +541,71 @@ class DatabaseService {
       await cartsCollection.updateOne(
         where.eq('_id', existingCartItem['_id']),
         modify
-          .inc('quantity', quantity)
-          .set('updatedAt', DateTime.now().toUtc()),
+            .inc('quantity', quantity)
+            .set('updatedAt', DateTime.now().toUtc()),
       );
     } else {
       await cartsCollection.insertOne({
         'userId': userId,
         'productId': productId,
         'quantity': quantity,
-        'selectedVariant': {
-          'color': selectedColor,
-          'size': selectedSize,
-        },
+        'selectedVariant': {'color': selectedColor, 'size': selectedSize},
         'createdAt': DateTime.now().toUtc(),
         'updatedAt': DateTime.now().toUtc(),
       });
     }
   }
+
+  static Future<void> placeOrder({
+    required String orderType,
+    required ObjectId userId,
+    required Map<String, dynamic> userInfo,
+    required List<Map<String, dynamic>> cartItems,
+    required double subTotal,
+    required double shippingCost,
+    required double totalAmount,
+    required ObjectId businessId,
+    required String branchCode,
+  }) async {
+    try {
+      final orderDoc = {
+        'businessId': businessId,
+        'branchCode': branchCode,
+        'userId': userId,
+        'userInfo': {...userInfo, '_id': ObjectId()},
+        'cartItems': cartItems,
+        'status': 'Pending',
+        'orderType': orderType,
+        'subTotal': subTotal,
+        'shippingCost': shippingCost,
+        'totalAmount': totalAmount,
+        'riderId': null,
+        'discountData': [],
+        'createdAt': DateTime.now().toUtc(),
+        'updatedAt': DateTime.now().toUtc(),
+      };
+
+      await ordersCollection.insertOne(orderDoc);
+    } catch (e) {
+      print('Error placing order: $e');
+      rethrow;
+    }
+  }
+
+  static Future<ObjectId> getCurrentUserId() async {
+  final session = await SessionManager.getUserSession();
+  String? email = session['email'];
+
+  var user = await DatabaseService.getUserByEmail(email!);
+  return user!['_id'];
+}
+
+static Future<Map<String, dynamic>> getCurrentUserInfo() async {
+  final session = await SessionManager.getUserSession();
+  String? email = session['email'];
+
+  var user = await DatabaseService.getUserByEmail(email!);
+  return user!;
+}
 
 }

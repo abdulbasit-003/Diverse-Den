@@ -13,4 +13,11 @@ class VariantColor {
       quantity: json['quantity'] is int ? json['quantity'] : int.tryParse(json['quantity'].toString()) ?? 0,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'color': color,
+      'quantity': quantity,
+    };
+  }
 }

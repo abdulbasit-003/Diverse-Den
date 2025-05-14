@@ -64,7 +64,7 @@ class CategoryViewPage extends StatelessWidget {
                           width: double.infinity,
                           color: Colors.grey[200],
                           child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(strokeWidth: 2,color: buttonColor,),
                           ),
                         );
                       },

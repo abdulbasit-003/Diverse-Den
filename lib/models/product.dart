@@ -11,6 +11,7 @@ class Product {
   final String productType;
   final List<Variant> variants;
   final ObjectId id;
+  final ObjectId business;
 
   Product({
     required this.title,
@@ -22,6 +23,7 @@ class Product {
     required this.productType,
     required this.variants,
     required this.id,
+    required this.business
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,22 @@ class Product {
       variants: (json['variants'] as List)
           .map((variant) => Variant.fromJson(variant))
           .toList(),
+          business: json['business'],
     );
   }
+  
+  Map<String, dynamic> toMap() {
+  return {
+    '_id': id,
+    'title': title,
+    'price': price,
+    'imagePath': imageUrls,
+    'description': description,
+    'category': category,
+    'subCategory': subCategory,
+    'productType': productType,
+    'variants': variants.map((v) => v.toMap()).toList(),
+  };
+}
+
 }

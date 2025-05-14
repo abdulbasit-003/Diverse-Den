@@ -134,7 +134,7 @@ class _StorePageState extends State<StorePage> {
       ),
       backgroundColor: Colors.white,
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: textColor))
+          ? const Center(child: CircularProgressIndicator(color: buttonColor,))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -215,7 +215,7 @@ class _StorePageState extends State<StorePage> {
                                               return const SizedBox(
                                                 height: 140,
                                                 child: Center(
-                                                  child: CircularProgressIndicator(),
+                                                  child: CircularProgressIndicator(color:buttonColor),
                                                 ),
                                               );
                                             },

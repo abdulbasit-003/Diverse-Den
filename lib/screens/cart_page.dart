@@ -3,6 +3,7 @@ import 'package:sample_project/constants.dart';
 import 'package:sample_project/models/cart_item.dart';
 import 'package:sample_project/database_service.dart';
 import 'package:bson/bson.dart';
+import 'package:sample_project/screens/checkout_screen.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -39,7 +40,11 @@ class _CartPageState extends State<CartPage> {
     fetchCartItems();
   }
 
-  Future<void> updateQuantity(ObjectId cartId, int newQty, CartItem item) async {
+  Future<void> updateQuantity(
+    ObjectId cartId,
+    int newQty,
+    CartItem item,
+  ) async {
     if (newQty < 1) return;
 
     final matchingVariant = item.product.variants.firstWhere(
@@ -65,7 +70,6 @@ class _CartPageState extends State<CartPage> {
     fetchCartItems();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,10 +89,18 @@ class _CartPageState extends State<CartPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.shopping_cart_outlined,size: 100,color: buttonColor,),
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 100,
+                      color: buttonColor,
+                    ),
                     Text(
                       'Your cart is empty!',
-                      style: TextStyle(color: textColor,fontSize: 16,fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -121,7 +133,9 @@ class _CartPageState extends State<CartPage> {
                                     right: 8,
                                   ),
                                   leading: Image.network(
-                                    item.product.imageUrls.isNotEmpty ? item.product.imageUrls[0] : '',
+                                    item.product.imageUrls.isNotEmpty
+                                        ? item.product.imageUrls[0]
+                                        : '',
                                     width: 50,
                                   ),
                                   title: Text(item.product.title),
@@ -156,12 +170,22 @@ class _CartPageState extends State<CartPage> {
                                     children: [
                                       IconButton(
                                         icon: const Icon(Icons.remove),
-                                        onPressed: () => updateQuantity(item.id, item.quantity - 1, item),
+                                        onPressed:
+                                            () => updateQuantity(
+                                              item.id,
+                                              item.quantity - 1,
+                                              item,
+                                            ),
                                       ),
                                       Text(item.quantity.toString()),
                                       IconButton(
                                         icon: const Icon(Icons.add),
-                                        onPressed: () => updateQuantity(item.id, item.quantity + 1, item),
+                                        onPressed:
+                                            () => updateQuantity(
+                                              item.id,
+                                              item.quantity + 1,
+                                              item,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -214,18 +238,38 @@ class _CartPageState extends State<CartPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,
                           ),
-                          onPressed: () {
-                            // Implement checkout logic
-                          },
-                          child: const SizedBox(
-                            width: double.infinity,
-                            child: Center(
-                              child: Text(
-                                'Checkout',
-                                style: TextStyle(color: Colors.white),
+                          onPressed: () async {
+                            final userId =
+                                await DatabaseService.getCurrentUserId(); // ObjectId
+                            final userInfo =
+                                await DatabaseService.getCurrentUserInfo(); // Map<String, dynamic>
+
+                            final cartItemMaps =
+                                cartItems
+                                    .map(
+                                      (cartItem) => {
+                                        'productId': cartItem.product.id,
+                                        'product':
+                                            cartItem.product
+                                                .toMap(), // product should have toMap()
+                                        'quantity': cartItem.quantity,
+                                      },
+                                    )
+                                    .toList();
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => CheckoutPage(
+                                      userId: userId,
+                                      userInfo: userInfo,
+                                      cartItems: cartItemMaps,
+                                    ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
+                          child: Text("Checkout",style: TextStyle(color: Colors.white),),
                         ),
                       ],
                     ),

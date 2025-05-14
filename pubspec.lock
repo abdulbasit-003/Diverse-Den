@@ -58,13 +58,13 @@ packages:
     source: hosted
     version: "2.1.2"
   bson:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bson
-      sha256: "9b761248a3494fea594aecf5d6f369b5f04d7b082aa2b8c06579ade77f1a7e47"
+      sha256: f8c80be7a62a88f4add7c48cc83567c36a77532de107224df8328ef71f125045
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.6"
+    version: "5.0.7"
   buffer:
     dependency: transitive
     description:

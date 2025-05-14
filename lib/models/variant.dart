@@ -17,4 +17,11 @@ class Variant {
           .toList(),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'size': size,
+      'colors': colors.map((color) => color.toMap()).toList(),
+    };
+  }
 }

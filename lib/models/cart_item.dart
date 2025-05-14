@@ -34,4 +34,13 @@ class CartItem {
       updatedAt: DateTime.parse(json['updatedAt'].toString()),
     );
   }
+  Map<String, dynamic> toMap() {
+  return {
+    'userId': userId, // should be ObjectId or String
+    'productId': product.id,
+    'selectedVariant': variant, // assumed to be a Map with color, size, etc.
+    'quantity': quantity,
+    'product': product.toMap(), // assuming your Product model also has toMap()
+  };
+}
 }
