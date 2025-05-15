@@ -223,6 +223,8 @@ class _ForYouPageState extends State<ForYouPage> {
                                 const SizedBox(height: 6),
                                 Text(
                                   description,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: textColor,
                                     fontSize: 14,
@@ -279,7 +281,7 @@ class _ForYouPageState extends State<ForYouPage> {
                                 (customerView)
                                     ? iconWithText(
                                       Icons.add_shopping_cart,
-                                      "",
+                                      "Cart",
                                       () {
                                         final productObj = Product.fromJson(product);
                                         Navigator.push(

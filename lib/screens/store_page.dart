@@ -189,12 +189,12 @@ class _StorePageState extends State<StorePage> {
                                 child: Container(
                                   width: 160,
                                   margin: const EdgeInsets.only(right: 12),
-                                  child: Card(
+                                  child: Card(                                    
                                     color: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    elevation: 5,
+                                    elevation: 10,
                                     shadowColor: buttonColor,
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +203,8 @@ class _StorePageState extends State<StorePage> {
                                           borderRadius: const BorderRadius.vertical(
                                             top: Radius.circular(16),
                                           ),
-                                          child: Image.network(
+                                          child: 
+                                          Image.network(
                                             product.imageUrls.isNotEmpty
                                                 ? product.imageUrls[0]
                                                 : '',
@@ -215,7 +216,7 @@ class _StorePageState extends State<StorePage> {
                                               return const SizedBox(
                                                 height: 140,
                                                 child: Center(
-                                                  child: CircularProgressIndicator(color:buttonColor),
+                                                  child: CircularProgressIndicator(strokeWidth: 2,color:buttonColor),
                                                 ),
                                               );
                                             },

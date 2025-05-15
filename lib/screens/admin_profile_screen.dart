@@ -74,10 +74,14 @@ class _SuperAdminProfileScreenState extends State<SuperAdminProfileScreen> {
                             border: Border.all(color: textColor, width: 3),
                           ),
                           child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: AssetImage(logo),
-                            backgroundColor: fieldBackgroundColor,
+                          radius: 50,
+                          backgroundColor: fieldBackgroundColor,
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
                           ),
+                        ),
                         ),
                         const SizedBox(height: 10),
                         Text(

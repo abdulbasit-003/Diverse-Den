@@ -112,17 +112,21 @@ class _BranchOwnerProfileScreenState extends State<BranchOwnerProfileScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: textColor, width: 3),
                         ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage:
-                              userData!['profilePicture'] != null &&
-                                      userData!['profilePicture'].isNotEmpty
-                                  ? NetworkImage(
+                        child:
+                            userData!['profilePicture'] != null &&
+                                    userData!['profilePicture'].isNotEmpty
+                                ? CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: fieldBackgroundColor,
+                                  backgroundImage: NetworkImage(
                                     userData!['profilePicture'],
-                                  )
-                                  : AssetImage(logo) as ImageProvider,
-                          backgroundColor: fieldBackgroundColor,
-                        ),
+                                  ),
+                                )
+                                : CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: buttonColor,
+                                  child: Icon(Icons.person, size: 50,color: Colors.grey,),
+                                ),
                       ),
                       const SizedBox(height: 10),
                       Text(

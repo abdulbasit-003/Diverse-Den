@@ -37,17 +37,17 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
     if (user!['role'] == 'Admin') {
       isAdmin = true;
     }
-    
+
     final following = await DatabaseService.isFollowingBusiness(
       customerEmail: currentUserEmail!,
       businessId: widget.business.id,
     );
 
     final ownerUser = await DatabaseService.getUserById(widget.business.user);
-      setState(() {
-        isFollowing = following;
-        profilePictureUrl = ownerUser?['profilePicture'];
-      });
+    setState(() {
+      isFollowing = following;
+      profilePictureUrl = ownerUser?['profilePicture'];
+    });
 
     await _fetchModels();
   }
@@ -76,8 +76,8 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
       backgroundColor: fieldBackgroundColor,
       appBar: AppBar(
         backgroundColor: buttonColor,
-        title: const Text(
-          'Business Profile',
+        title: Text(
+          business.name,
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -100,13 +100,20 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                           shape: BoxShape.circle,
                           border: Border.all(color: textColor, width: 3),
                         ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: fieldBackgroundColor,
-                          backgroundImage: profilePictureUrl != null
-                              ? NetworkImage(profilePictureUrl!)
-                              : const AssetImage(logo) as ImageProvider,
-                        ),
+                        child:
+                            profilePictureUrl != null
+                                ? CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: fieldBackgroundColor,
+                                  backgroundImage: NetworkImage(
+                                    profilePictureUrl!,
+                                  ),
+                                )
+                                : CircleAvatar(
+                                  backgroundColor: buttonColor,
+                                  radius: 50,
+                                  child: Icon(Icons.person, size: 50,color: Colors.grey,),
+                                ),
                       ),
                       verticalSpace(10),
                       Text(

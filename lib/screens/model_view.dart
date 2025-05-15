@@ -34,7 +34,6 @@ class _ModelViewState extends State<ModelView> {
     super.initState();
     initialize();
   }
-  
 
   Future<void> initialize() async {
     final session = await SessionManager.getUserSession();
@@ -164,6 +163,8 @@ class _ModelViewState extends State<ModelView> {
                 const SizedBox(height: 6),
                 Text(
                   description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(color: textColor, fontSize: 14),
                 ),
                 const SizedBox(height: 6),
@@ -209,8 +210,15 @@ class _ModelViewState extends State<ModelView> {
                 }),
                 const SizedBox(height: 20),
                 (customerView)
-                    ? iconWithText(Icons.add_shopping_cart, "", () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => ProductDetailPage(product: Product.fromJson(updatedProduct!)),),);
+                    ? iconWithText(Icons.add_shopping_cart, "Cart", () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (ctx) => ProductDetailPage(
+                                product: Product.fromJson(updatedProduct!),
+                              ),
+                        ),
+                      );
                     })
                     : Text(''),
               ],

@@ -116,8 +116,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                         ),
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundImage:  AssetImage(logo),
                           backgroundColor: fieldBackgroundColor,
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10),

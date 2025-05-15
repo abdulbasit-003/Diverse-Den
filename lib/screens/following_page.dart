@@ -179,6 +179,8 @@ class _FollowingPageState extends State<FollowingPage> {
                                 const SizedBox(height: 6),
                                 Text(
                                   description,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: textColor,
                                     fontSize: 14,
@@ -229,7 +231,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                   await fetchProducts(); // Refresh comment count
                                 }),
                                 const SizedBox(height: 20),
-                                iconWithText(Icons.add_shopping_cart, "", () {
+                                iconWithText(Icons.add_shopping_cart, "Cart", () {
                                   Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => ProductDetailPage(product: Product.fromJson(product),),),);
                                 }),
                               ],

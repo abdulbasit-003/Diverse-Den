@@ -25,7 +25,7 @@ class ProductCard extends StatelessWidget {
       },
       child: Card(
         color: Colors.white,
-        elevation: 5,
+        elevation: 10,
         shadowColor: buttonColor,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
