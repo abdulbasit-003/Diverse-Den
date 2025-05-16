@@ -85,7 +85,38 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: logout,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Confirm Logout?'),
+                      content: const Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: textColor),
+                          ),
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: buttonColor,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            logout();
+                          },
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+              );
+            },
           ),
         ],
       ),
@@ -114,15 +145,25 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: textColor, width: 3),
                         ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: fieldBackgroundColor,
-                          child: Icon(
-                            Icons.person,
-                            size: 50,
-                            color: Colors.grey,
-                          ),
-                        ),
+                        child:
+                            userData!['profilePicture'] != null &&
+                                    userData!['profilePicture'].isNotEmpty
+                                ? CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: fieldBackgroundColor,
+                                  backgroundImage: NetworkImage(
+                                    userData!['profilePicture'],
+                                  ),
+                                )
+                                : CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: buttonColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                       ),
                       const SizedBox(height: 10),
                       Text(

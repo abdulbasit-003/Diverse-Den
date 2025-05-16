@@ -236,9 +236,8 @@ class DatabaseService {
       final res = await response.stream.bytesToString();
       final data = json.decode(res);
 
-      final modelUrl = data['secure_url']; // Cloudinary model URL
+      final modelUrl = data['secure_url']; 
 
-      // Updating my product in MongoDB with this model URL
       await _saveModelUrlToProduct(sku, businessId, modelUrl);
     } else {
       throw Exception(

@@ -85,7 +85,31 @@ class _BranchOwnerProfileScreenState extends State<BranchOwnerProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: logout,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Confirm Logout?'),
+                      content: const Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed:
+                              () => Navigator.pop(context), 
+                          child: const Text('Cancel',style: TextStyle(color: textColor),),
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(backgroundColor: buttonColor),
+                          onPressed: () {
+                            Navigator.pop(context); 
+                            logout(); 
+                          },
+                          child: const Text('Logout',style: TextStyle(color: Colors.white),),
+                        ),
+                      ],
+                    ),
+              );
+            },
           ),
         ],
       ),
@@ -125,7 +149,11 @@ class _BranchOwnerProfileScreenState extends State<BranchOwnerProfileScreen> {
                                 : CircleAvatar(
                                   radius: 50,
                                   backgroundColor: buttonColor,
-                                  child: Icon(Icons.person, size: 50,color: Colors.grey,),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                       ),
                       const SizedBox(height: 10),
