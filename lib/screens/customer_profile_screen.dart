@@ -90,6 +90,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 context: context,
                 builder:
                     (context) => AlertDialog(
+                      backgroundColor: Colors.white,
                       title: const Text('Confirm Logout?'),
                       content: const Text('Are you sure you want to logout?'),
                       actions: [

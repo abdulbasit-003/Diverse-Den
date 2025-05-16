@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sample_project/screens/branch_owner_profile.dart';
 import 'package:sample_project/widgets/product_card.dart';
 import '../models/business.dart';
 import '../constants.dart';
@@ -26,14 +27,15 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
   @override
   void initState() {
     super.initState();
-    _fetchModels();
     _initialize();
+    _fetchModels();
   }
 
   Future<void> _initialize() async {
     final session = await SessionManager.getUserSession();
     currentUserEmail = session['email'];
     final user = await DatabaseService.getUserByEmail(session['email']!);
+    currentUser = user;
     if (user!['role'] == 'Admin') {
       isAdmin = true;
     }
@@ -72,14 +74,21 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
   Widget build(BuildContext context) {
     final business = widget.business;
 
+    if (isLoading || currentUser == null) {
+      return const Scaffold(
+        backgroundColor: fieldBackgroundColor,
+        body: Center(child: CircularProgressIndicator(color: buttonColor)),
+      );
+    }
+
+    if (currentUser['business'] == widget.business.id) {
+      return BranchOwnerProfileScreen();
+    }
     return Scaffold(
       backgroundColor: fieldBackgroundColor,
       appBar: AppBar(
         backgroundColor: buttonColor,
-        title: Text(
-          business.name,
-          style: TextStyle(color: Colors.white),
-        ),
+        title: Text(business.name, style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body:
@@ -112,7 +121,11 @@ class _BusinessProfileViewState extends State<BusinessProfileView> {
                                 : CircleAvatar(
                                   backgroundColor: buttonColor,
                                   radius: 50,
-                                  child: Icon(Icons.person, size: 50,color: Colors.grey,),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                       ),
                       verticalSpace(10),

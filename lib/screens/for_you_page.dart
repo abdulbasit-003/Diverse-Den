@@ -124,7 +124,7 @@ class _ForYouPageState extends State<ForYouPage> {
     return Scaffold(
       body:
           isLoading
-              ? const Center(child: CircularProgressIndicator(color: textColor))
+              ? const Center(child: CircularProgressIndicator(color: buttonColor))
               : products.isEmpty
               ? const Center(
                 child: Text(

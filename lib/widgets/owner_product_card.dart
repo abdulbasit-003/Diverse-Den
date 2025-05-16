@@ -11,23 +11,28 @@ class OwnerProductCard extends StatelessWidget {
   Future<void> _deleteProductData(BuildContext context) async {
     final bool confirmed = await showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete 3D Model?',),
-        content: const Text(
-          'Are you sure you want to delete the 3D model of this product? This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel',style: TextStyle(color: buttonColor),),
+      builder:
+          (ctx) => AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text('Delete 3D Model?'),
+            content: const Text(
+              'Are you sure you want to delete the 3D model of this product? This cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: buttonColor),
+                ),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(backgroundColor: buttonColor),
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: const Text('Yes', style: TextStyle(color: Colors.white)),
+              ),
+            ],
           ),
-          TextButton(
-            style: TextButton.styleFrom(backgroundColor: buttonColor),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Yes',style: TextStyle(color: Colors.white),),
-          ),
-        ],
-      ),
     );
 
     if (!confirmed) return;
@@ -47,14 +52,16 @@ class OwnerProductCard extends StatelessWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('3D Product data deleted successfully!')),
+          const SnackBar(
+            content: Text('3D Product data deleted successfully!'),
+          ),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Connection failure!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Connection failure!')));
       }
     }
   }
@@ -92,8 +99,9 @@ class OwnerProductCard extends StatelessWidget {
                   height: 130,
                   width: 130,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image, size: 130),
+                  errorBuilder:
+                      (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image, size: 130),
                 ),
               ),
               const SizedBox(height: 8),
@@ -108,7 +116,7 @@ class OwnerProductCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6,),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 decoration: BoxDecoration(
                   color: Colors.brown,
                   borderRadius: BorderRadius.circular(5),

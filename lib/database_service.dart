@@ -5,9 +5,7 @@ import 'package:sample_project/models/cart_item.dart';
 import 'package:sample_project/models/product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:sample_project/session_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseService {
   static late Db db;
