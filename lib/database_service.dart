@@ -554,55 +554,81 @@ class DatabaseService {
   }
 
   static Future<void> placeOrder({
-    required String orderType,
-    required ObjectId userId,
-    required Map<String, dynamic> userInfo,
+    required String paymentMethod,
+    required String address,
+    required String city,
     required List<Map<String, dynamic>> cartItems,
-    required double subTotal,
-    required double shippingCost,
-    required double totalAmount,
-    required ObjectId businessId,
-    required String branchCode,
+    required Map<String, dynamic> userInfo,
   }) async {
-    try {
+    final userId = await getCurrentUserId();
+    final now = DateTime.now();
+
+    // Group cart items by businessId
+    final Map<String, List<Map<String, dynamic>>> itemsByBusiness = {};
+    for (var item in cartItems) {
+      final businessId = item['product']['business'];
+      if (!itemsByBusiness.containsKey(businessId)) {
+        itemsByBusiness[businessId] = [];
+      }
+      itemsByBusiness[businessId]!.add(item);
+    }
+
+    for (final entry in itemsByBusiness.entries) {
+      final businessId = entry.key;
+      final businessCartItems = entry.value;
+
+      int subTotal = 0;
+      for (var item in businessCartItems) {
+        final num price = item['product']['price'];
+        final num quantity = item['quantity'];
+        subTotal += (price * quantity).toInt();
+      }
+
+      const shippingCost = 200;
+      final totalAmount = subTotal + shippingCost;
+
       final orderDoc = {
-        'businessId': businessId,
-        'branchCode': branchCode,
+        'businessId': ObjectId.fromHexString(businessId),
+        'branchCode': null,
         'userId': userId,
-        'userInfo': {...userInfo, '_id': ObjectId()},
-        'cartItems': cartItems,
+        'userInfo': {
+          'firstname': userInfo['firstname'],
+          'lastname': userInfo['lastname'],
+          'email': userInfo['email'],
+          'phone': userInfo['phone'],
+          'address': address,
+          'city': city,
+          'paymentMethod': paymentMethod,
+        },
+        'cartItems': businessCartItems,
         'status': 'Pending',
-        'orderType': orderType,
+        'orderType': 'Online',
         'subTotal': subTotal,
         'shippingCost': shippingCost,
         'totalAmount': totalAmount,
         'riderId': null,
-        'discountData': [],
-        'createdAt': DateTime.now().toUtc(),
-        'updatedAt': DateTime.now().toUtc(),
+        'createdAt': now,
+        'updatedAt': now,
       };
 
       await ordersCollection.insertOne(orderDoc);
-    } catch (e) {
-      print('Error placing order: $e');
-      rethrow;
     }
   }
 
   static Future<ObjectId> getCurrentUserId() async {
-  final session = await SessionManager.getUserSession();
-  String? email = session['email'];
+    final session = await SessionManager.getUserSession();
+    String? email = session['email'];
 
-  var user = await DatabaseService.getUserByEmail(email!);
-  return user!['_id'];
-}
+    var user = await DatabaseService.getUserByEmail(email!);
+    return user!['_id'];
+  }
 
-static Future<Map<String, dynamic>> getCurrentUserInfo() async {
-  final session = await SessionManager.getUserSession();
-  String? email = session['email'];
+  static Future<Map<String, dynamic>> getCurrentUserInfo() async {
+    final session = await SessionManager.getUserSession();
+    String? email = session['email'];
 
-  var user = await DatabaseService.getUserByEmail(email!);
-  return user!;
-}
+    var user = await DatabaseService.getUserByEmail(email!);
+    return user!;
+  }
 
 }

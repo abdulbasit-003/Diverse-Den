@@ -239,8 +239,8 @@ class _CartPageState extends State<CartPage> {
                             backgroundColor: buttonColor,
                           ),
                           onPressed: () async {
-                            final userId =
-                                await DatabaseService.getCurrentUserId(); // ObjectId
+                            // final userId =
+                            //     await DatabaseService.getCurrentUserId(); // ObjectId
                             final userInfo =
                                 await DatabaseService.getCurrentUserInfo(); // Map<String, dynamic>
 
@@ -262,8 +262,7 @@ class _CartPageState extends State<CartPage> {
                               MaterialPageRoute(
                                 builder:
                                     (context) => CheckoutPage(
-                                      userId: userId,
-                                      userInfo: userInfo,
+                                      userData: userInfo,
                                       cartItems: cartItemMaps,
                                     ),
                               ),

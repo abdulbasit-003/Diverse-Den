@@ -217,8 +217,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               verticalSpace(12),
             ],
             if (selectedColor != null &&
-                selectedSize != null &&
-                quantity != null) ...[
+                selectedSize != null) ...[
               Text(
                 'Available Quantity: $quantity',
                 style: const TextStyle(color: textColor),

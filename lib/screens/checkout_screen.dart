@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sample_project/constants.dart';
-import 'package:bson/bson.dart';
 import 'package:sample_project/database_service.dart';
 
 class CheckoutPage extends StatefulWidget {
-  final ObjectId userId;
-  final Map<String, dynamic> userInfo;
   final List<Map<String, dynamic>> cartItems;
+  final Map<String, dynamic> userData;
 
   const CheckoutPage({
     super.key,
-    required this.userId,
-    required this.userInfo,
     required this.cartItems,
+    required this.userData,
   });
 
   @override
@@ -20,68 +17,118 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  bool isFirstNameEmpty = false;
+  bool isLastNameEmpty = false;
+  bool isEmailEmpty = false;
+  bool isPhoneEmpty = false;
+  bool isAddressEmpty = false;
+  bool isCityEmpty = false;
+  
   bool isPlacingOrder = false;
+  String selectedPaymentMethod = 'cashOnDelivery';
   double shippingCost = finalShippingCost;
 
-  void _placeOrders() async {
-    setState(() => isPlacingOrder = true);
+  @override
+  void initState() {
+    super.initState();
+    firstNameController.text = widget.userData['firstname'] ?? '';
+    lastNameController.text = widget.userData['lastname'] ?? '';
+    emailController.text = widget.userData['email'] ?? '';
+    phoneController.text = widget.userData['phone']?.toString() ?? '';
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+    cityController.dispose();
+    super.dispose();
+  }
+
+  double get subTotal {
+    double total = 0;
+    for (var item in widget.cartItems) {
+      final price = double.tryParse(item['product']['price'].toString()) ?? 0;
+      final quantity = int.tryParse(item['quantity'].toString()) ?? 1;
+      total += price * quantity;
+    }
+    return total;
+  }
+
+  Future<void> _placeOrders() async {
+  setState(() {
+    isPlacingOrder = true;
+
+    // Update error flags
+    isFirstNameEmpty = firstNameController.text.trim().isEmpty;
+    isLastNameEmpty = lastNameController.text.trim().isEmpty;
+    isEmailEmpty = emailController.text.trim().isEmpty;
+    isPhoneEmpty = phoneController.text.trim().isEmpty;
+    isAddressEmpty = addressController.text.trim().isEmpty;
+    isCityEmpty = cityController.text.trim().isEmpty;
+  });
+
+  // If any field is empty, show error dialog and return
+  if (isFirstNameEmpty ||
+      isLastNameEmpty ||
+      isEmailEmpty ||
+      isPhoneEmpty ||
+      isAddressEmpty ||
+      isCityEmpty) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Missing Information"),
+        content: const Text("Please enter all details."),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(backgroundColor: buttonColor),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    setState(() => isPlacingOrder = false);
+    return;
+  }
+
+    final userInfo = {
+      "firstname": firstNameController.text.trim(),
+      "lastname": lastNameController.text.trim(),
+      "email": emailController.text.trim(),
+      "phone": phoneController.text.trim(),
+      "address": addressController.text.trim(),
+      "city": cityController.text.trim(),
+      "paymentMethod": selectedPaymentMethod,
+    };
 
     try {
-      // Group cart items by businessId
-      final Map<ObjectId, List<Map<String, dynamic>>> itemsByBusiness = {};
+      await DatabaseService.placeOrder(
+        paymentMethod: selectedPaymentMethod,
+        address: userInfo['address']!,
+        city: userInfo['city']!,
+        cartItems: widget.cartItems,
+        userInfo: userInfo,
+      );
 
-      for (var item in widget.cartItems) {
-        final product = item['product'];
-        final businessHex = product['business'];
-
-        if (businessHex == null || businessHex is! String) {
-          throw Exception("Invalid or missing business ID in product: ${product['title']}");
-        }
-
-        final businessId = ObjectId.fromHexString(businessHex);
-
-        itemsByBusiness.putIfAbsent(businessId, () => []).add(item);
-      }
-
-
-      for (var entry in itemsByBusiness.entries) {
-        final businessId = entry.key;
-        final items = entry.value;
-
-        double subTotal = 0;
-
-        for (var item in items) {
-          final price =
-              double.tryParse(item['product']['price'].toString()) ?? 0;
-          final quantity = int.tryParse(item['quantity'].toString()) ?? 1;
-          subTotal += price * quantity;
-        }
-
-        double totalAmount = subTotal + shippingCost;
-
-        await DatabaseService.placeOrder(
-          orderType: 'Online',
-          userId: widget.userId,
-          userInfo: {...widget.userInfo, 'paymentMethod': 'cashOnDelivery'},
-          cartItems: items,
-          subTotal: subTotal,
-          shippingCost: shippingCost,
-          totalAmount: totalAmount,
-          businessId: businessId,
-          branchCode: '',
-        );
-      }
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Order(s) placed successfully!')));
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Order placed successfully!')),
+      );
       Navigator.pop(context);
     } catch (e) {
-      print('Error placing orders: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Order Placed Successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to place order: $e')),
+      );
     } finally {
       setState(() => isPlacingOrder = false);
     }
@@ -89,104 +136,156 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    double subTotal = 0;
-    for (var item in widget.cartItems) {
-      final price = double.tryParse(item['product']['price'].toString()) ?? 0;
-      final quantity = int.tryParse(item['quantity'].toString()) ?? 1;
-      subTotal += price * quantity;
-    }
-
-    double totalAmount = subTotal + shippingCost;
+    final total = subTotal + shippingCost;
 
     return Scaffold(
       backgroundColor: Colors.white,
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, -2),
+            )
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _summaryRow("Subtotal", subTotal),
+            _summaryRow("Shipping", shippingCost),
+            _summaryRow("Total", total, isBold: true),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: isPlacingOrder ? null : _placeOrders,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                backgroundColor: buttonColor,
+              ),
+              child: isPlacingOrder
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Place Order", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Checkout', style: TextStyle(color: Colors.white)),
         backgroundColor: buttonColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Shipping Address:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            // Cart Items Display
+            const Text('Your Items', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            ListView.builder(
+              itemCount: widget.cartItems.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final item = widget.cartItems[index];
+                final product = item['product'];
+                final quantity = item['quantity'];
+                final title = product['title'] ?? '';
+                final image = (product['imagePath'] != null && product['imagePath'].isNotEmpty)
+                    ? product['imagePath'][0]
+                    : null;
+                final price = product['price'] ?? 0;
+
+                return ListTile(
+                  leading: image != null
+                      ? Image.network(image, width: 50, height: 50, fit: BoxFit.cover)
+                      : const Icon(Icons.image),
+                  title: Text(title),
+                  subtitle: Text('Qty: $quantity'),
+                  trailing: Text('Rs. ${(price * quantity).toString()}'),
+                );
+              },
             ),
+
+            const Divider(height: 32),
+            const Text("Customer Info", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            _inputField("First Name", firstNameController, isFirstNameEmpty),
+            _inputField("Last Name", lastNameController, isLastNameEmpty),
+            _inputField("Email", emailController, isEmailEmpty),
+            _inputField("Phone", phoneController, isPhoneEmpty),
+            _inputField("Address", addressController, isAddressEmpty),
+            _inputField("City", cityController, isCityEmpty),
+
+            const SizedBox(height: 24),
+            const Text("Payment Method", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(widget.userInfo['address'] ?? ''),
-            const Divider(height: 32),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.cartItems.length,
-                itemBuilder: (context, index) {
-                  final item = widget.cartItems[index];
-                  final product = item['product'];
-                  final quantity = item['quantity'];
-
-                  final title = product['title'] ?? '';
-                  final image =
-                      (product['imagePath'] != null &&
-                              product['imagePath'].isNotEmpty)
-                          ? product['imagePath'][0]
-                          : null;
-                  final price = product['price'] ?? 0;
-
-                  return ListTile(
-                    leading:
-                        image != null
-                            ? Image.network(
-                              image,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            )
-                            : Icon(Icons.image),
-                    title: Text(title),
-                    subtitle: Text('Qty: $quantity'),
-                    trailing: Text('Rs. ${(price * quantity).toString()}'),
-                  );
-                },
-              ),
+            DropdownButtonFormField<String>(
+              dropdownColor: Colors.white,
+              value: selectedPaymentMethod,
+              items: const [
+                DropdownMenuItem(value: 'cashOnDelivery', child: Text("Cash on Delivery")),
+                DropdownMenuItem(value: 'stripe', child: Text("Stripe")),
+              ],
+              onChanged: (value) => setState(() => selectedPaymentMethod = value!),
+              decoration: const InputDecoration(border: OutlineInputBorder()),
             ),
 
             const Divider(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Subtotal'),
-                Text('Rs. ${subTotal.toStringAsFixed(2)}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Shipping'),
-                Text('Rs. ${shippingCost.toStringAsFixed(2)}'),
-              ],
-            ),
-            const Divider(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(
-                  'Rs. ${totalAmount.toStringAsFixed(2)}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
-              onPressed: isPlacingOrder ? null : _placeOrders,
-              child:
-                  isPlacingOrder
-                      ? CircularProgressIndicator(color: buttonColor)
-                      : Text('Place Order',style: TextStyle(color: Colors.white),),
-            ),
+            // const Text("Summary", style: TextStyle(fontWeight: FontWeight.bold)),
+            // const SizedBox(height: 8),
+            // _summaryRow("Subtotal", subTotal),
+            // _summaryRow("Shipping", shippingCost),
+            // _summaryRow("Total", total, isBold: true),
+
+            // const SizedBox(height: 24),
+            // ElevatedButton(
+            //   onPressed: isPlacingOrder ? null : _placeOrders,
+            //   style: ElevatedButton.styleFrom(
+            //     minimumSize: const Size.fromHeight(50),
+            //     backgroundColor: buttonColor,
+            //   ),
+            //   child: isPlacingOrder
+            //       ? const CircularProgressIndicator(color: Colors.white)
+            //       : const Text("Place Order", style: TextStyle(color: Colors.white)),
+            // )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _inputField(String label, TextEditingController controller, bool isError) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: isError ? Colors.red : buttonColor, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: isError ? Colors.red : Colors.grey),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _summaryRow(String label, double amount, {bool isBold = false}) {
+    final textStyle = isBold ? const TextStyle(fontWeight: FontWeight.bold) : null;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: textStyle),
+          Text("Rs. ${amount.toStringAsFixed(2)}", style: textStyle),
+        ],
       ),
     );
   }
