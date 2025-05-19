@@ -257,16 +257,19 @@ class _CartPageState extends State<CartPage> {
                                     )
                                     .toList();
 
-                            Navigator.push(
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder:
-                                    (context) => CheckoutPage(
-                                      userData: userInfo,
-                                      cartItems: cartItemMaps,
-                                    ),
+                                builder: (context) => CheckoutPage(
+                                  userData: userInfo,
+                                  cartItems: cartItemMaps,
+                                ),
                               ),
                             );
+
+                            if (result == true) {
+                              fetchCartItems(); // Re-fetch cart to reflect that it's empty
+                            }
                           },
                           child: Text("Checkout",style: TextStyle(color: Colors.white),),
                         ),

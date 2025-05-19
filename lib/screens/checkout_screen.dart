@@ -134,7 +134,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
       for (final entry in groupedItems.entries) {
         final businessId = entry.key;
         final items = entry.value;
-        print(businessId);
         await DatabaseService.placeOrder(
           businessId: businessId,
           address: address,
@@ -145,12 +144,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
         );
       }
 
+      final userId = await DatabaseService.getCurrentUserId();
+      await DatabaseService.clearUserCart(userId);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Order placed successfully!')),
       );
-      Navigator.pop(context);
-    } catch (e,stack) {
-      print(stack);
+      Navigator.pop(context, true);
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to place order: $e')),
       );

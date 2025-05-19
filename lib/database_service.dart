@@ -624,4 +624,8 @@ class DatabaseService {
       return businessId;
   }
 
+  static Future<void> clearUserCart(ObjectId userId) async {
+    await cartsCollection.deleteMany({'userId': userId});
+  }
+
 }
