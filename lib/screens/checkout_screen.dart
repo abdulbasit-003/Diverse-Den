@@ -65,67 +65,92 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _placeOrders() async {
-  setState(() {
-    isPlacingOrder = true;
+    setState(() {
+      isPlacingOrder = true;
 
-    // Update error flags
-    isFirstNameEmpty = firstNameController.text.trim().isEmpty;
-    isLastNameEmpty = lastNameController.text.trim().isEmpty;
-    isEmailEmpty = emailController.text.trim().isEmpty;
-    isPhoneEmpty = phoneController.text.trim().isEmpty;
-    isAddressEmpty = addressController.text.trim().isEmpty;
-    isCityEmpty = cityController.text.trim().isEmpty;
-  });
+      // Validate input fields
+      isFirstNameEmpty = firstNameController.text.trim().isEmpty;
+      isLastNameEmpty = lastNameController.text.trim().isEmpty;
+      isEmailEmpty = emailController.text.trim().isEmpty;
+      isPhoneEmpty = phoneController.text.trim().isEmpty;
+      isAddressEmpty = addressController.text.trim().isEmpty;
+      isCityEmpty = cityController.text.trim().isEmpty;
+    });
 
-  // If any field is empty, show error dialog and return
-  if (isFirstNameEmpty ||
-      isLastNameEmpty ||
-      isEmailEmpty ||
-      isPhoneEmpty ||
-      isAddressEmpty ||
-      isCityEmpty) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Missing Information"),
-        content: const Text("Please enter all details."),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(backgroundColor: buttonColor),
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-    setState(() => isPlacingOrder = false);
-    return;
-  }
+    if (isFirstNameEmpty || isLastNameEmpty || isEmailEmpty || isPhoneEmpty || isAddressEmpty || isCityEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Missing Information"),
+          content: const Text("Please enter all details."),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(backgroundColor: buttonColor),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+      setState(() => isPlacingOrder = false);
+      return;
+    }
+
+    final firstname = firstNameController.text.trim();
+    final lastname = lastNameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final address = addressController.text.trim();
+    final city = cityController.text.trim();
 
     final userInfo = {
-      "firstname": firstNameController.text.trim(),
-      "lastname": lastNameController.text.trim(),
-      "email": emailController.text.trim(),
-      "phone": phoneController.text.trim(),
-      "address": addressController.text.trim(),
-      "city": cityController.text.trim(),
+      "firstname": firstname,
+      "lastname": lastname,
+      "email": email,
+      "phone": phone,
+      "address": address,
+      "city": city,
       "paymentMethod": selectedPaymentMethod,
     };
 
+    // ✅ Group cart items by businessId
+    final Map<String, List<Map<String, dynamic>>> groupedItems = {};
+
+    for (var item in widget.cartItems) {
+      final product = item['product'];
+      final productId = product['_id'];
+
+      final businessId = await DatabaseService.getBusinessIdByProductId(productId);
+      if (businessId == null) continue;
+
+      final businessIdStr = businessId.toHexString();
+      final updatedItem = Map<String, dynamic>.from(item);
+      updatedItem['businessId'] = businessId;
+
+      groupedItems.putIfAbsent(businessIdStr, () => []).add(updatedItem);
+    }
+
     try {
-      await DatabaseService.placeOrder(
-        paymentMethod: selectedPaymentMethod,
-        address: userInfo['address']!,
-        city: userInfo['city']!,
-        cartItems: widget.cartItems,
-        userInfo: userInfo,
-      );
+      for (final entry in groupedItems.entries) {
+        final businessId = entry.key;
+        final items = entry.value;
+        print(businessId);
+        await DatabaseService.placeOrder(
+          businessId: businessId,
+          address: address,
+          city: city,
+          cartItems: items,
+          userInfo: userInfo,
+          paymentMethod: selectedPaymentMethod,
+        );
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Order placed successfully!')),
       );
       Navigator.pop(context);
-    } catch (e) {
+    } catch (e,stack) {
+      print(stack);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to place order: $e')),
       );

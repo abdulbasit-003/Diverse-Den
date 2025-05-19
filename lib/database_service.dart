@@ -554,6 +554,7 @@ class DatabaseService {
   }
 
   static Future<void> placeOrder({
+    required String businessId,
     required String paymentMethod,
     required String address,
     required String city,
@@ -563,57 +564,43 @@ class DatabaseService {
     final userId = await getCurrentUserId();
     final now = DateTime.now();
 
-    // Group cart items by businessId
-    final Map<String, List<Map<String, dynamic>>> itemsByBusiness = {};
+    int subTotal = 0;
     for (var item in cartItems) {
-      final businessId = item['product']['business'];
-      if (!itemsByBusiness.containsKey(businessId)) {
-        itemsByBusiness[businessId] = [];
-      }
-      itemsByBusiness[businessId]!.add(item);
+      final num price = item['product']['price'];
+      final num quantity = item['quantity'];
+      subTotal += (price * quantity).toInt();
     }
 
-    for (final entry in itemsByBusiness.entries) {
-      final businessId = entry.key;
-      final businessCartItems = entry.value;
+    const shippingCost = 200;
+    final totalAmount = subTotal + shippingCost;
 
-      int subTotal = 0;
-      for (var item in businessCartItems) {
-        final num price = item['product']['price'];
-        final num quantity = item['quantity'];
-        subTotal += (price * quantity).toInt();
-      }
+    final orderDoc = {
+      'businessId': ObjectId.fromHexString(businessId),
+      'branchCode': null,
+      'userId': userId,
+      'userInfo': {
+        'firstname': userInfo['firstname'],
+        'lastname': userInfo['lastname'],
+        'email': userInfo['email'],
+        'phone': userInfo['phone'],
+        'address': address,
+        'city': city,
+        'paymentMethod': paymentMethod,
+      },
+      'cartItems': cartItems,
+      'status': 'Pending',
+      'orderType': 'Online',
+      'subTotal': subTotal,
+      'shippingCost': shippingCost,
+      'totalAmount': totalAmount,
+      'riderId': null,
+      'createdAt': now,
+      'updatedAt': now,
+    };
 
-      const shippingCost = 200;
-      final totalAmount = subTotal + shippingCost;
-
-      final orderDoc = {
-        'businessId': ObjectId.fromHexString(businessId),
-        'branchCode': null,
-        'userId': userId,
-        'userInfo': {
-          'firstname': userInfo['firstname'],
-          'lastname': userInfo['lastname'],
-          'email': userInfo['email'],
-          'phone': userInfo['phone'],
-          'address': address,
-          'city': city,
-          'paymentMethod': paymentMethod,
-        },
-        'cartItems': businessCartItems,
-        'status': 'Pending',
-        'orderType': 'Online',
-        'subTotal': subTotal,
-        'shippingCost': shippingCost,
-        'totalAmount': totalAmount,
-        'riderId': null,
-        'createdAt': now,
-        'updatedAt': now,
-      };
-
-      await ordersCollection.insertOne(orderDoc);
-    }
+    await ordersCollection.insertOne(orderDoc);
   }
+
 
   static Future<ObjectId> getCurrentUserId() async {
     final session = await SessionManager.getUserSession();
@@ -629,6 +616,12 @@ class DatabaseService {
 
     var user = await DatabaseService.getUserByEmail(email!);
     return user!;
+  }
+
+  static Future<ObjectId?> getBusinessIdByProductId(ObjectId productId) async {
+      final productDoc = await productsCollection.findOne(where.eq('_id', productId));
+      final businessId = productDoc!['business'];
+      return businessId;
   }
 
 }
